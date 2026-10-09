@@ -1,6 +1,58 @@
 // - Selecting the container where gallery cards will be added
 const gallery = document.getElementById("gallery");
 
+// - Main list of 12 users, filled in after the API response
+// - Never emptied, so each search starts from the full list
+let users = [];
+
+// - Selecting the container where search will be added
+const searchContainer = document.querySelector(".search-container");
+console.log("SEARCH-CONTAINER", searchContainer);
+
+// - Designing for search form the searchbar on page
+const searchHTML = `
+                <form action="#" method="get">
+                            <input type="search" id="search-input" class="search-input" placeholder="Search...">
+                            <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
+                        </form>
+`;
+
+// - Adding the search bar to the actual dom element
+// - https://developer.mozilla.org/en-US/docs/Web/API/Element/input_event
+searchContainer.insertAdjacentHTML("beforeend", searchHTML);
+
+const searchInput = document.getElementById("search-input");
+console.log("SEARCH-INPUT", searchInput);
+
+// - Listening for typed text
+searchInput.addEventListener("input", updateValue);
+
+// - Runs every time the text in the search box changes
+function updateValue() {
+  console.log("GROWING", searchInput.value);
+
+  // - Get the typed text in lowercase so the search is uniform
+  const typedText = searchInput.value.toLowerCase();
+  console.log("TYPED TEXT", typedText);
+
+  // - Filter to match typed text only
+  const filteredUsers = users.filter((user) => {
+    //  combine first and last name  in lowercase to copare with typed text
+    const fullName = `${user.name.first} ${user.name.last}`.toLowerCase();
+
+    //  if true keep user, if false drop them
+    return fullName.includes(typedText);
+  });
+
+  // - Clear cards currently on page
+  gallery.innerHTML = "";
+
+  // - Display only the filtered users that match
+  displayRandomUsers(filteredUsers);
+
+  console.log("FILTERED", filteredUsers);
+}
+
 // - Selecting 12 random users from the API then passing them into the display function
 async function getRandomUsers() {
   try {
@@ -14,10 +66,12 @@ async function getRandomUsers() {
     }
     //  - Convert the response to Javascript Object Notation.
     const data = await response.json();
-    console.log("DATA:", data);
+    console.log("DATA", data);
 
     //  - pass the data to the displayRandomUsers function.
     displayRandomUsers(data.results);
+    users = data.results;
+    console.log("USERS:", users);
   } catch (error) {
     // - log any fetch or parsing errors to the console.
     console.error(error.message);
