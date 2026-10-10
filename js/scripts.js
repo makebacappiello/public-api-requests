@@ -7,7 +7,6 @@ let users = [];
 
 // - Selecting the container where search will be added
 const searchContainer = document.querySelector(".search-container");
-console.log("SEARCH-CONTAINER", searchContainer);
 
 // - Designing for search form the searchbar on page
 const searchHTML = `
@@ -22,22 +21,18 @@ const searchHTML = `
 searchContainer.insertAdjacentHTML("beforeend", searchHTML);
 
 const searchInput = document.getElementById("search-input");
-console.log("SEARCH-INPUT", searchInput);
 
 // - Listening for typed text
 searchInput.addEventListener("input", updateValue);
 
 // - Runs every time the text in the search box changes
 function updateValue() {
-  console.log("GROWING", searchInput.value);
-
   // - Get the typed text in lowercase so the search is uniform
   const typedText = searchInput.value.toLowerCase();
-  console.log("TYPED TEXT", typedText);
 
   // - Filter to match typed text only
   const filteredUsers = users.filter((user) => {
-    //  combine first and last name  in lowercase to copare with typed text
+    //  combine first and last name  in lowercase to compare with typed text
     const fullName = `${user.name.first} ${user.name.last}`.toLowerCase();
 
     //  if true keep user, if false drop them
@@ -49,8 +44,6 @@ function updateValue() {
 
   // - Display only the filtered users that match
   displayRandomUsers(filteredUsers);
-
-  console.log("FILTERED", filteredUsers);
 }
 
 // - Selecting 12 random users from the API then passing them into the display function
@@ -66,12 +59,10 @@ async function getRandomUsers() {
     }
     //  - Convert the response to Javascript Object Notation.
     const data = await response.json();
-    console.log("DATA", data);
 
     //  - pass the data to the displayRandomUsers function.
     displayRandomUsers(data.results);
     users = data.results;
-    console.log("USERS:", users);
   } catch (error) {
     // - log any fetch or parsing errors to the console.
     console.error(error.message);
@@ -87,8 +78,6 @@ getRandomUsers();
 function displayRandomUsers(randomUsers) {
   // - Loop over the array of users.
   randomUsers.forEach((randomUser) => {
-    console.log(randomUser);
-
     // - Details needed for the card
     const image = randomUser.picture.medium;
     const firstName = randomUser.name.first;
@@ -184,7 +173,7 @@ function displayUserModal(user, userIndex, userList) {
   if (userIndex === 0) prevBtn.style.visibility = "hidden";
   if (userIndex === userList.length - 1) nextBtn.style.visibility = "hidden";
 
-  // - Close this modal, then open the next for the next person
+  // - Close this modal, then open the neighbouring person’s modal
   prevBtn.addEventListener("click", () => {
     document.querySelector(".modal-container").remove();
     displayUserModal(userList[userIndex - 1], userIndex - 1, userList);
