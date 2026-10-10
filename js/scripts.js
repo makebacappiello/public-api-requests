@@ -96,6 +96,8 @@ function displayRandomUsers(randomUsers) {
     const email = randomUser.email;
     const city = randomUser.location.city;
     const state = randomUser.location.state;
+    const userIndex = randomUsers.indexOf(randomUser);
+    console.log("INDEX OFFFFFF", userIndex);
     // - Designing the HTML using details above
     const cardHTML = `
     <div class="card">
@@ -115,7 +117,9 @@ function displayRandomUsers(randomUsers) {
 
     // - Making each card clickable to display details of modal
     const card = gallery.lastElementChild;
-    card.addEventListener("click", () => displayUserModal(randomUser));
+    card.addEventListener("click", () =>
+      displayUserModal(randomUser, userIndex, randomUsers)
+    );
   });
 }
 
@@ -124,12 +128,12 @@ function displayRandomUsers(randomUsers) {
 //---------------------------------------------------------------------
 
 // - Display Modal Window when opened
-function displayUserModal(user) {
+function displayUserModal(user, userIndex, userList) {
   // - Converting dob from the API into a date object for simple reading
   const birthDate = new Date(user.dob.date);
 
   // - Format the birthday as m/d/y.
-  // getMonth() is zero-based and returns 0-11 (0 = January, 11 =      December),
+  // getMonth() is zero-based and returns 0-11 (0 = January, 11 = December),
   //  so add 1 to get the month number people expect (1-12).
   // - Source https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/getMonth
   const birthday = `${
@@ -156,12 +160,38 @@ function displayUserModal(user) {
                                     <p class="modal-text">Birthday: ${birthday}</p>
                                 </div>
                             </div>
+                            <div class="modal-btn-container">
+                    <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
+                    <button type="button" id="modal-next" class="modal-next btn">Next</button>
+                </div>
             </div>
         `;
+
   // - Placing the HTML before the end of the body/page
   document.body.insertAdjacentHTML("beforeend", modalHTML);
+
   // - Remove the modal from page when the close button is clicked
+
   document.getElementById("modal-close-btn").addEventListener("click", () => {
     document.querySelector(".modal-container").remove();
+  });
+
+  // - Prev and Next buttons
+  const prevBtn = document.getElementById("modal-prev");
+  const nextBtn = document.getElementById("modal-next");
+
+  // - Hide the button that has nowhere to go (first / last person)
+  if (userIndex === 0) prevBtn.style.visibility = "hidden";
+  if (userIndex === userList.length - 1) nextBtn.style.visibility = "hidden";
+
+  // - Close this modal, then open the next for the next person
+  prevBtn.addEventListener("click", () => {
+    document.querySelector(".modal-container").remove();
+    displayUserModal(userList[userIndex - 1], userIndex - 1, userList);
+  });
+
+  nextBtn.addEventListener("click", () => {
+    document.querySelector(".modal-container").remove();
+    displayUserModal(userList[userIndex + 1], userIndex + 1, userList);
   });
 }
